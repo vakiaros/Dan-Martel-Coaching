@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dan Martell — AI Coach · VakMedia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/*
+  HYBRID DESIGN SYSTEM
+  VakMedia base (#0d0d0d, Barlow, pill shapes, card system)
+  × Dan Martell accent (electric blue #1A7BFF)
+  — Variant C / Blue — exclusive to this product page
+*/
+:root {
+  /* ── VakMedia Base (unchanged) */
+  --bg:          #0d0d0d;
+  --surface:     #141414;
+  --surface2:    #1a1a1a;
+  --card:        #161616;
+  --text:        #ffffff;
+  --muted:       rgba(255,255,255,0.45);
+  --muted2:      rgba(255,255,255,0.22);
+  --border:      rgba(255,255,255,0.07);
+  --border-md:   rgba(255,255,255,0.13);
+
+  /* ── Dan Martell Blue Accent (Variant C) */
+  --accent:      #1A7BFF;
+  --accent-dim:  rgba(26,123,255,0.10);
+  --accent-mid:  rgba(26,123,255,0.20);
+  --accent2:     #4FA3FF;
+  --glow:        radial-gradient(ellipse 60% 50% at 50% 0%, rgba(26,123,255,0.12) 0%, transparent 70%);
+  --red:         #cc3d22;
+
+  /* ── Typography (VakMedia) */
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body:    'Barlow', sans-serif;
+
+  /* ── Spatial (VakMedia) */
+  --r-pill:   999px;
+  --r-card:   14px;
+  --r-sm:     8px;
+  --r-btn:    999px;
+
+  --sidebar: 272px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; overflow: hidden;
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ══════════════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════════════ */
+#app { display: flex; height: 100dvh; overflow: hidden; position: relative; }
+
+/* glow background */
+#app::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: var(--glow);
+}
+
+/* ══════════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════════ */
+#sidebar {
+  width: var(--sidebar); min-width: var(--sidebar);
+  background: var(--surface);
+  border-right: 1px solid var(--border-md);
+  display: flex; flex-direction: column;
+  overflow: hidden; flex-shrink: 0;
+  transition: width .26s cubic-bezier(.4,0,.2,1),
+              min-width .26s cubic-bezier(.4,0,.2,1),
+              transform .26s cubic-bezier(.4,0,.2,1);
+  position: relative; z-index: 50;
+}
+#sidebar.collapsed { width: 0; min-width: 0; border-right: none; }
+
+@media (max-width: 768px) {
+  #sidebar {
+    position: fixed !important; top: 0; left: 0; bottom: 0;
+    width: 280px !important; min-width: 280px !important;
+    transform: translateX(-100%);
+    box-shadow: 8px 0 48px rgba(0,0,0,0.7);
+    z-index: 200;
+  }
+  #sidebar.open { transform: translateX(0); }
+  #sb-backdrop {
+    display: none; position: fixed; inset: 0; z-index: 199;
+    background: rgba(0,0,0,0.65); backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+  #sb-backdrop.visible { display: block; }
+}
+
+/* sidebar top */
+.sb-top {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* VAVA monogram in sidebar */
+.sb-brand {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+.sb-vava { width: 34px; height: 10px; flex-shrink: 0; }
+.sb-brand-text { overflow: hidden; }
+.sb-brand-text h2 {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--text); white-space: nowrap; line-height: 1;
+}
+.sb-brand-text p {
+  font-size: 10px; color: var(--muted);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-top: 2px; white-space: nowrap;
+}
+
+.new-btn {
+  width: 100%;
+  background: var(--accent-dim);
+  border: 1px solid rgba(26,123,255,0.25);
+  color: var(--accent2);
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 10px 14px; border-radius: var(--r-btn);
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: background .18s, border-color .18s, color .18s;
+}
+.new-btn:hover {
+  background: var(--accent-mid);
+  border-color: var(--accent);
+  color: #fff;
+}
+.new-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+.sb-section-label {
+  padding: 14px 16px 5px;
+  font-family: var(--font-body);
+  font-size: 9px; font-weight: 600;
+  color: var(--muted2); letter-spacing: 0.18em; text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+#chat-list { flex: 1; overflow-y: auto; padding: 4px 10px 16px; }
+#chat-list::-webkit-scrollbar { width: 3px; }
+#chat-list::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: 2px; }
+
+.ci {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 11px; border-radius: var(--r-sm);
+  cursor: pointer; border: 0.5px solid transparent;
+  transition: background .14s, border-color .14s;
+  margin-bottom: 2px;
+}
+.ci:hover { background: var(--surface2); border-color: var(--border-md); }
+.ci.active {
+  background: var(--accent-dim);
+  border-color: rgba(26,123,255,0.3);
+}
+.ci-icon { width: 16px; height: 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.ci-icon svg { width: 13px; height: 13px; color: var(--muted2); }
+.ci.active .ci-icon svg { color: var(--accent2); }
+.ci-label {
+  flex: 1; min-width: 0;
+  font-size: 12.5px; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ci.active .ci-label { color: var(--text); }
+.ci-del {
+  opacity: 0; width: 16px; height: 16px; flex-shrink: 0;
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted2); transition: opacity .14s, color .14s;
+}
+.ci:hover .ci-del { opacity: 1; }
+.ci-del:hover { color: var(--red); }
+.ci-del svg { width: 11px; height: 11px; }
+
+.sb-foot {
+  padding: 14px 16px; border-top: 1px solid var(--border); flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+}
+.sb-foot-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34,197,94,0.6);
+  flex-shrink: 0; animation: pulse 2.5s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.sb-foot-txt {
+  font-size: 10px; color: var(--muted2);
+  font-family: var(--font-body);
+  letter-spacing: 0.04em;
+}
+
+/* ══════════════════════════════════════════════════
+   MAIN
+══════════════════════════════════════════════════ */
+#main {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; position: relative; z-index: 1;
+}
+
+/* ══════════════════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════════════════ */
+#topbar {
+  display: flex; align-items: center;
+  padding: 0 20px; height: 54px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(13,13,13,0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  flex-shrink: 0; gap: 12px;
+  position: relative; z-index: 5;
+}
+
+#tog-sb {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); width: 32px; height: 32px;
+  border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  transition: color .15s, background .15s; flex-shrink: 0;
+}
+#tog-sb:hover { color: var(--accent2); background: var(--accent-dim); }
+#tog-sb svg { width: 16px; height: 16px; }
+
+/* VAVA monogram in topbar */
+.tb-vava { height: 9px; width: auto; flex-shrink: 0; }
+
+.tb-sep { width: 1px; height: 18px; background: var(--border-md); flex-shrink: 0; }
+
+.tb-title {
+  font-family: var(--font-display);
+  font-size: 14px; font-weight: 800;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--text); white-space: nowrap;
+}
+
+.tb-sub {
+  font-size: 11px; color: var(--muted);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 500; white-space: nowrap;
+}
+
+.tb-badge {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 6px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(26,123,255,0.22);
+  border-radius: var(--r-pill);
+  padding: 4px 13px;
+  font-family: var(--font-body);
+  font-size: 10px; color: var(--accent2); font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+}
+.tb-badge-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent2); animation: pulse 2s infinite;
+}
+
+/* ══════════════════════════════════════════════════
+   CHAT AREA
+══════════════════════════════════════════════════ */
+#chat-area {
+  flex: 1; overflow-y: auto;
+  position: relative; z-index: 1; scroll-behavior: smooth;
+}
+#chat-area::-webkit-scrollbar { width: 4px; }
+#chat-area::-webkit-scrollbar-track { background: transparent; }
+#chat-area::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: 2px; }
+
+/* ══════════════════════════════════════════════════
+   WELCOME SCREEN
+══════════════════════════════════════════════════ */
+#welcome {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100%; padding: 60px 24px 40px;
+  text-align: center;
+  animation: fadeUp .5s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* animated ring monogram */
+.w-stage {
+  position: relative; width: 100px; height: 100px;
+  margin: 0 auto 28px;
+}
+.w-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1px solid rgba(26,123,255,0.14);
+  animation: spin 16s linear infinite;
+}
+.w-ring2 {
+  position: absolute; inset: 8px; border-radius: 50%;
+  border: 1px dashed rgba(26,123,255,0.08);
+  animation: spin 22s linear infinite reverse;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.w-core {
+  position: absolute; inset: 16px; border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid rgba(26,123,255,0.28);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 40px rgba(26,123,255,0.15);
+}
+.w-core svg { width: 36px; height: auto; }
+
+.w-eyebrow {
+  font-family: var(--font-body);
+  font-size: 10px; font-weight: 600;
+  color: var(--accent2); letter-spacing: 0.22em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.w-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 6vw, 56px); font-weight: 900;
+  color: var(--text); line-height: 0.95;
+  letter-spacing: -0.01em; margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.w-title em { font-style: normal; color: var(--accent2); }
+.w-sub {
+  font-size: 13.5px; color: var(--muted);
+  max-width: 420px; line-height: 1.65; margin-bottom: 36px;
+}
+
+/* starter cards — VakMedia card style */
+.starter-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 10px; width: 100%; max-width: 560px;
+}
+@media(max-width:520px){ .starter-grid{ grid-template-columns:1fr; } }
+
+.sc {
+  background: var(--surface2);
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--r-card);
+  padding: 14px 16px;
+  cursor: pointer; text-align: left;
+  transition: border-color .2s, background .2s, transform .15s;
+  font-family: var(--font-body);
+}
+.sc:hover {
+  border-color: rgba(26,123,255,0.35);
+  background: var(--accent-dim);
+  transform: translateY(-1px);
+}
+.sc .sc-tag {
+  font-family: var(--font-body);
+  font-size: 9px; font-weight: 600;
+  color: var(--accent2); letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 5px;
+}
+.sc .sc-txt { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+
+/* ══════════════════════════════════════════════════
+   MESSAGES
+══════════════════════════════════════════════════ */
+.msgs-wrap {
+  max-width: 740px; margin: 0 auto;
+  padding: 32px 20px 16px;
+  display: flex; flex-direction: column;
+}
+
+.msg-grp { margin-bottom: 24px; animation: msgIn .28s cubic-bezier(.2,.8,.4,1); }
+@keyframes msgIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+
+.msg-hd {
+  display: flex; align-items: center; gap: 9px;
+  margin-bottom: 8px;
+}
+
+/* DM avatar — accent circle */
+.msg-av {
+  width: 28px; height: 28px; border-radius: 50%;
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 10px; font-weight: 800;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.msg-av.dm {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(26,123,255,0.35);
+}
+.msg-av.you {
+  background: var(--surface2);
+  border: 0.5px solid var(--border-md);
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.msg-name {
+  font-family: var(--font-body);
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted2);
+}
+.msg-name.dm { color: var(--accent2); }
+.msg-ts { font-size: 10px; color: var(--muted2); margin-left: auto; }
+
+/* bubbles — VakMedia card style */
+.bubble {
+  padding: 14px 18px;
+  border-radius: var(--r-card);
+  font-size: 14px; line-height: 1.72;
+}
+.bubble.dm-b {
+  background: var(--surface2);
+  border: 0.5px solid var(--border-md);
+  border-left: 2px solid var(--accent);
+  color: var(--text);
+}
+.bubble.you-b {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  color: var(--muted);
+  margin-left: 40px;
+}
+
+/* section headers inside DM bubble */
+.bubble .sec-hd {
+  display: flex; align-items: center; gap: 9px;
+  font-family: var(--font-display);
+  font-size: 11px; font-weight: 800;
+  color: var(--accent2); letter-spacing: 0.16em; text-transform: uppercase;
+  margin: 16px 0 9px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid rgba(26,123,255,0.1);
+}
+.bubble .sec-hd:first-child { margin-top: 0; }
+.bubble .sec-hd::before {
+  content:''; width: 14px; height: 1px;
+  background: var(--accent); flex-shrink: 0;
+}
+
+.bubble p { margin-bottom: 8px; }
+.bubble p:last-child { margin-bottom: 0; }
+.bubble strong { color: #fff; font-weight: 600; }
+.bubble em { color: var(--muted); font-style: italic; }
+
+/* numbered list */
+.bubble .ni { display: flex; gap: 10px; margin-bottom: 6px; align-items: flex-start; }
+.bubble .ni .n {
+  font-family: var(--font-display);
+  color: var(--accent2); font-size: 11px; font-weight: 700;
+  min-width: 20px; padding-top: 2px; flex-shrink: 0;
+}
+.bubble .ni .t { color: var(--text); line-height: 1.65; }
+
+/* bullet list */
+.bubble .bi { display: flex; gap: 10px; margin-bottom: 5px; align-items: flex-start; }
+.bubble .bi::before {
+  content: '→'; color: var(--accent);
+  font-size: 11px; flex-shrink: 0; padding-top: 2px;
+}
+
+/* typing indicator */
+.typing-grp { margin-bottom: 24px; }
+.typing-bub {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--surface2);
+  border: 0.5px solid var(--border-md);
+  border-left: 2px solid var(--accent);
+  padding: 13px 18px; border-radius: var(--r-card);
+}
+.typing-bub .d {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent2); opacity: .4;
+  animation: tdot 1.3s infinite;
+}
+.typing-bub .d:nth-child(2){animation-delay:.18s}
+.typing-bub .d:nth-child(3){animation-delay:.36s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+
+/* date divider */
+.date-div {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0 20px; color: var(--muted2);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.date-div::before,.date-div::after { content:''; flex:1; border-top: 1px solid var(--border); }
+
+/* ══════════════════════════════════════════════════
+   INPUT BAR — VakMedia pill style
+══════════════════════════════════════════════════ */
+#input-area {
+  flex-shrink: 0; padding: 12px 20px 16px;
+  background: rgba(13,13,13,0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  position: relative; z-index: 5;
+}
+.input-inner { max-width: 740px; margin: 0 auto; }
+.input-shell {
+  display: flex; align-items: flex-end; gap: 10px;
+  background: var(--surface2);
+  border: 0.5px solid var(--border-md);
+  border-radius: var(--r-pill);
+  padding: 10px 10px 10px 18px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.input-shell:focus-within {
+  border-color: rgba(26,123,255,0.45);
+  box-shadow: 0 0 0 3px rgba(26,123,255,0.07);
+}
+#inp {
+  flex: 1; background: none; border: none; outline: none;
+  color: var(--text); font-family: var(--font-body);
+  font-size: 14px; line-height: 1.5;
+  resize: none; min-height: 22px; max-height: 130px;
+  scrollbar-width: none;
+}
+#inp::-webkit-scrollbar { display: none; }
+#inp::placeholder { color: var(--muted2); }
+
+/* send button — pill accent */
+#send {
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: var(--accent);
+  border: none; border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  transition: background .18s, transform .1s, box-shadow .18s;
+  box-shadow: 0 0 18px rgba(26,123,255,0.3);
+}
+#send:hover { background: var(--accent2); box-shadow: 0 0 28px rgba(26,123,255,0.45); }
+#send:active { transform: scale(.9); }
+#send:disabled { background: var(--surface2); box-shadow: none; cursor: not-allowed; color: var(--muted2); }
+#send svg { width: 14px; height: 14px; }
+
+.inp-foot {
+  display: flex; align-items: center; justify-content: center; gap: 22px;
+  margin-top: 8px;
+}
+.inp-foot span { font-size: 10px; color: var(--muted2); letter-spacing: 0.04em; }
+.inp-foot span strong { color: var(--accent2); font-weight: 500; }
+
+* { scrollbar-width: thin; scrollbar-color: var(--border-md) transparent; }
+</style>
+</head>
+<body>
+<div id="app">
+<div id="sb-backdrop" onclick="closeSBMobile()"></div>
+
+<!-- ── SIDEBAR ─────────────────────────────────── -->
+<nav id="sidebar">
+  <div class="sb-top">
+    <div class="sb-brand">
+      <!-- VAVA monogram SVG -->
+      <svg class="sb-vava" viewBox="0 0 339 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M304.156 100H338.15L300.756 0H264.779L226.535 100H260.53L271.719 63.7394L282.626 28.4703L293.249 63.7394L304.156 100Z" fill="white"/>
+        <path d="M220.728 100H189L227.952 0H259.68L220.728 100Z" fill="white"/>
+        <path d="M154.816 100H188.81L151.416 0H115.439L77.1953 100H111.19L122.379 63.7394L133.286 28.4703L143.909 63.7394L154.816 100Z" fill="white"/>
+        <path d="M110.198 0L71.3881 100H38.3853L0 0H32.2946L55.0992 61.3314L77.762 0H110.198Z" fill="white"/>
+      </svg>
+      <div class="sb-brand-text">
+        <h2>Dan Martell</h2>
+        <p>AI Coach</p>
+      </div>
+    </div>
+    <button class="new-btn" onclick="newChat(); if(isMobile()) closeSBMobile();">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Session
+    </button>
+  </div>
+  <div class="sb-section-label">Sessions</div>
+  <div id="chat-list"></div>
+  <div class="sb-foot">
+    <div class="sb-foot-dot"></div>
+    <span class="sb-foot-txt">Martell Method · Active</span>
+  </div>
+</nav>
+
+<!-- ── MAIN ──────────────────────────────────────── -->
+<main id="main">
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <button id="tog-sb" onclick="toggleSB()" title="Toggle sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <line x1="9" y1="3" x2="9" y2="21"/>
+      </svg>
+    </button>
+    <!-- VAVA monogram -->
+    <svg class="tb-vava" viewBox="0 0 339 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M304.156 100H338.15L300.756 0H264.779L226.535 100H260.53L271.719 63.7394L282.626 28.4703L293.249 63.7394L304.156 100Z" fill="white"/>
+      <path d="M220.728 100H189L227.952 0H259.68L220.728 100Z" fill="white"/>
+      <path d="M154.816 100H188.81L151.416 0H115.439L77.1953 100H111.19L122.379 63.7394L133.286 28.4703L143.909 63.7394L154.816 100Z" fill="white"/>
+      <path d="M110.198 0L71.3881 100H38.3853L0 0H32.2946L55.0992 61.3314L77.762 0H110.198Z" fill="white"/>
+    </svg>
+    <div class="tb-sep"></div>
+    <span class="tb-title">Dan Martell</span>
+    <span class="tb-sub" style="display:none" id="tb-sub-desk">· AI Coach</span>
+    <div class="tb-badge"><div class="tb-badge-dot"></div>Live Coaching</div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat-area"></div>
+
+  <!-- INPUT -->
+  <div id="input-area">
+    <div class="input-inner">
+      <div class="input-shell">
+        <textarea id="inp" rows="1" placeholder="Ask Dan anything about your business…"></textarea>
+        <button id="send" onclick="sendMsg()" title="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </div>
+      <div class="inp-foot">
+        <span>↵ <strong>Enter</strong> send</span>
+        <span>⇧↵ <strong>Shift+Enter</strong> new line</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+
+/* ══════════════════════════════════════════════════
+   HIDDEN SYSTEM PROMPT
+══════════════════════════════════════════════════ */
+const SYS = `You are Dan Martell — one of the top SaaS and business coaches in the world, WSJ bestselling author of "Buy Back Your Time", Forbes Top 10 Business People to Follow, and builder of a $100M+ empire through Martell Ventures and SaaS Academy. You speak with clarity, confidence, and high energy. You ask challenging questions, push for ownership, break problems into systems, and share repeatable frameworks. You draw from real coaching principles: Buy Back Your Time, RACI, ESE, ESE2, the 10-10-10 rule, SOPs, weekly cadence, KPIs, and high-leverage delegation. You sound exactly like Dan in tone, attitude, and precision.
+
+IDENTITY: Rehab at 17 → broke at 24 → millionaire at 27 → $100M empire. Founded and exited 3 tech companies in 10 years. Canada's #1 angel investor 2012 (backed Intercom, Udemy, Unbounce). Founded SaaS Academy 2016. Ironman athlete, husband, father of 2 boys.
+
+YOUR ROLE: Personal business coach, mentor, accountability partner. Help users think bigger, execute faster, remove bottlenecks, build systems, and scale with clarity. When someone brings a problem: (1) identify the CORE ISSUE — founders often misdiagnose, (2) ask 1-2 sharp clarifying questions if needed, (3) apply the RIGHT framework, (4) push to execute — challenge excuses, create momentum, (5) end every response with a specific action they can start TODAY.
+
+RESPONSE FORMAT — USE EVERY TIME — three labeled sections:
+
+**INSIGHT**
+Identify the real problem with clarity. No fluff. Name what's actually happening.
+
+**FRAMEWORK**
+Share the exact Dan Martell principle or tool. Explain clearly and concisely.
+
+**ACTION PLAN**
+3-5 concrete numbered steps to follow today or this week. Specific, not vague.
+
+CORE FRAMEWORKS:
+THE BUYBACK PRINCIPLE: "Don't hire to grow. Hire to buy back your time." Buyback Rate = your hourly value. Buyback Loop: Audit → Transfer → Fill.
+DRIP MATRIX: Financial Value × Energy — DELEGATE (low+draining), REPLACE (high+draining), INVEST (low+energizing), PRODUCE (high+energizing = your zone).
+5 TIME ASSASSINS: Staller, Speed Demon, Supervisor, Saver, Self-Medicator.
+4Cs PLAYBOOK: Camcorder (Loom 3-5x) → Course (AI+transcription=SOP) → Cadence → Checklist.
+RACI: Responsible / Accountable / Consulted / Informed — clarity on every project.
+ESE+ESE2: Energy + Skills + Experience + Environment — all must align in any hire.
+10-10-10 RULE: 10 minutes / 10 months / 10 years — kills emotional short-term decisions.
+WEEKLY CADENCE: Mon=planning, Tue/Thu=calls batched, Wed=deep work, Fri=KPI review. 3 MITs daily.
+KPI SCORECARD: 1-3 KPIs per person, Green/Yellow/Red weekly. Lead indicators beat lag.
+CLEAR FEEDBACK: Warmth → self-critique → empathize → ask for more → commit to change.
+CO-A-CH: Core Issue / Actual Story / Change / How to Help.
+FOUNDER LADDER: L1=employee of own biz, L2=manager, L3=CEO/investor (systems run without you).
+10X VISION: Dream limitlessly → visualize achieved → live AS IF from that future state now.
+AICO BLUEPRINT: AI across Sales/Ops/Marketing/Support/Finance. 3 models: AI Agency(60-70%), AI Consulting(80%), AI SaaS(90%). AI Wealth Stack: Sell → Scale → Stack.
+OFFER ENGINEERING: Grand Slam Offer = core + bonus stack (bonus > core value). Sell by Chat. Volume pricing.
+SaaS LEVERS: NRR>100%, logo vs revenue churn, Cancellation Capture System, Product-Led Growth.
+
+TONE: Direct, high energy, zero fluff. First person: "Here's what I'd do..." / "In my companies..." Challenge excuses with curiosity: "What's actually stopping you?" Signature phrases: "Buy back your time." / "Here's the thing." / "You can't scale chaos." / "That's a systems problem, not a people problem." / "Run the loop." Always be in their corner — you believe in them more than they believe in themselves.`;
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let sessions = JSON.parse(localStorage.getItem('dm_v2_sessions') || '[]');
+let activeId = null;
+let sbOpen = true;
+
+
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Start with sidebar closed on mobile
+  if (isMobile()) {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+  renderSB();
+  if (sessions.length) loadSess(sessions[sessions.length-1].id);
+  else showWelcome();
+
+
+  const ta = document.getElementById('inp');
+  ta.addEventListener('input', () => { ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,130)+'px'; });
+  ta.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();} });
+});
+
+/* ══════════════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════════════ */
+function isMobile() { return window.innerWidth <= 768; }
+
+function toggleSB() {
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sb-backdrop');
+  if (isMobile()) {
+    const isOpen = sb.classList.contains('open');
+    sb.classList.toggle('open', !isOpen);
+    bd.classList.toggle('visible', !isOpen);
+  } else {
+    sbOpen = !sbOpen;
+    sb.classList.toggle('collapsed', !sbOpen);
+  }
+}
+
+function closeSBMobile() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-backdrop').classList.remove('visible');
+}
+
+function renderSB() {
+  const list = document.getElementById('chat-list');
+  if (!sessions.length) {
+    list.innerHTML = `<div style="padding:16px 10px;font-size:11px;color:var(--ink3)">No sessions yet</div>`;
+    return;
+  }
+  list.innerHTML = sessions.slice().reverse().map(s => `
+    <div class="ci${s.id===activeId?' active':''}" onclick="loadSess('${s.id}'); if(isMobile()) closeSBMobile();">
+      <div class="ci-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div class="ci-label">${esc(s.title)}</div>
+      <button class="ci-del" onclick="delSess(event,'${s.id}')" title="Delete">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14H6L5 6"/>
+          <path d="M10 11v6"/><path d="M14 11v6"/>
+        </svg>
+      </button>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════
+   SESSION MANAGEMENT
+══════════════════════════════════════════════════ */
+function newChat() {
+  const id = 'S'+Date.now();
+  sessions.push({ id, title: 'New Session', messages: [], created: Date.now() });
+  save(); activeId = id; renderSB(); showWelcome();
+}
+
+function loadSess(id) {
+  activeId = id; renderSB();
+  const s = sessions.find(x=>x.id===id);
+  if (!s) return;
+  const area = document.getElementById('chat-area');
+  area.innerHTML = '';
+  if (!s.messages.length) { showWelcome(); return; }
+  const wrap = mkWrap();
+  area.appendChild(wrap);
+  let lastDate = '';
+  s.messages.forEach(m => {
+    const d = new Date(m.ts).toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+    if (d !== lastDate) { lastDate=d; const div=document.createElement('div'); div.className='date-div'; div.textContent=d; wrap.appendChild(div); }
+    appendMsg(wrap, m.role, m.content, m.ts, false);
+  });
+  scrollBot();
+}
+
+function delSess(e, id) {
+  e.stopPropagation();
+  sessions = sessions.filter(s=>s.id!==id); save();
+  if (activeId===id) { activeId=null; sessions.length?loadSess(sessions[sessions.length-1].id):showWelcome(); }
+  renderSB();
+}
+
+function save() { localStorage.setItem('dm_v2_sessions', JSON.stringify(sessions)); }
+function active() { return sessions.find(s=>s.id===activeId); }
+
+/* ══════════════════════════════════════════════════
+   WELCOME
+══════════════════════════════════════════════════ */
+const STARTERS = [
+  {tag:'Buyback Loop', txt:"I'm working 70-hour weeks and can't escape the day-to-day. Help me run the Buyback Loop."},
+  {tag:'DRIP Matrix', txt:"Walk me through the DRIP Matrix and help me apply it to what I do every week."},
+  {tag:'Scale to $1M', txt:"What are the first 3 moves I should make to go from $200K to $1M revenue this year?"},
+  {tag:'AI Blueprint', txt:"How do I start integrating AI into my business operations with your AICO blueprint?"},
+  {tag:'Delegation', txt:"Every time I delegate, it comes back wrong. What framework should I use?"},
+  {tag:'Weekly Cadence', txt:"Design the perfect CEO weekly cadence for me so I stop being reactive and start leading."}
+];
+
+function showWelcome() {
+  document.getElementById('chat-area').innerHTML = `
+    <div id="welcome">
+      <div class="w-stage">
+        <div class="w-ring"></div>
+        <div class="w-ring2"></div>
+        <div class="w-core">
+          <svg viewBox="0 0 339 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M304.156 100H338.15L300.756 0H264.779L226.535 100H260.53L271.719 63.7394L282.626 28.4703L293.249 63.7394L304.156 100Z" fill="white" opacity="0.9"/>
+            <path d="M220.728 100H189L227.952 0H259.68L220.728 100Z" fill="white" opacity="0.9"/>
+            <path d="M154.816 100H188.81L151.416 0H115.439L77.1953 100H111.19L122.379 63.7394L133.286 28.4703L143.909 63.7394L154.816 100Z" fill="white" opacity="0.9"/>
+            <path d="M110.198 0L71.3881 100H38.3853L0 0H32.2946L55.0992 61.3314L77.762 0H110.198Z" fill="white" opacity="0.9"/>
+          </svg>
+        </div>
+      </div>
+      <p class="w-eyebrow">The Martell Method · AI Coach</p>
+      <h1 class="w-title">Ready to <em>Buy Back</em><br>Your Time?</h1>
+      <p class="w-sub">Ask me anything about scaling your business, reclaiming your calendar, or installing the systems that set you free.</p>
+      <div class="starter-grid">
+        ${STARTERS.map(s=>`
+          <button class="sc" onclick="fireStarter(this)">
+            <div class="sc-tag">${s.tag}</div>
+            <div class="sc-txt">${s.txt}</div>
+          </button>`).join('')}
+      </div>
+    </div>`;
+}
+
+function fireStarter(btn) {
+  document.getElementById('inp').value = btn.querySelector('.sc-txt').textContent;
+  sendMsg();
+}
+
+/* ══════════════════════════════════════════════════
+   SEND MESSAGE
+══════════════════════════════════════════════════ */
+async function sendMsg() {
+  const ta = document.getElementById('inp');
+  const text = ta.value.trim();
+  if (!text) return;
+
+  // ensure session
+  if (!activeId) {
+    const id = 'S'+Date.now();
+    sessions.push({ id, title: text.slice(0,40)+(text.length>40?'…':''), messages: [], created: Date.now() });
+    activeId = id; save();
+  }
+
+  const s = active();
+  const ts = Date.now();
+  const area = document.getElementById('chat-area');
+
+  // clear welcome / get wrap
+  if (document.getElementById('welcome')) {
+    area.innerHTML='';
+    area.appendChild(mkWrap());
+  }
+  const wrap = area.querySelector('.msgs-wrap');
+
+  // push + render user message
+  s.messages.push({ role:'user', content:text, ts });
+  if (s.messages.length===1) s.title = text.slice(0,42)+(text.length>42?'…':'');
+  appendMsg(wrap,'user',text,ts,true);
+  save(); renderSB();
+
+  ta.value=''; ta.style.height='auto';
+  document.getElementById('send').disabled = true;
+
+  // typing indicator
+  const tEl = document.createElement('div');
+  tEl.className='msg-grp typing-grp'; tEl.id='typ';
+  tEl.innerHTML=`
+    <div class="msg-hd">
+      <div class="msg-av dm">DM</div>
+      <span class="msg-name dm">Dan Martell</span>
+    </div>
+    <div class="typing-bub"><div class="d"></div><div class="d"></div><div class="d"></div></div>`;
+  wrap.appendChild(tEl); scrollBot();
+
+  try {
+    const history = s.messages.slice(0,-1)
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(m=>({role:m.role, content:m.content}));
+    history.push({role:'user', content:text});
+
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: history, system: SYS })
+    });
+
+    const data = await res.json();
+    document.getElementById('typ')?.remove();
+
+    if (!res.ok) {
+      appendMsg(wrap, 'assistant', `⚠️ Error: ${data.error || 'Something went wrong. Try again.'}`, Date.now(), true);
+    } else if (data.content?.[0]) {
+      const reply = data.content[0].text;
+      const rts = Date.now();
+      s.messages.push({role:'assistant', content:reply, ts:rts});
+      save();
+      appendMsg(wrap, 'assistant', reply, rts, true);
+    } else {
+      throw new Error('empty response');
+    }
+  } catch(err) {
+    document.getElementById('typ')?.remove();
+    const errTxt = err.message?.includes('Failed to fetch')
+      ? '⚠️ Network error — check your connection and try again.'
+      : '⚠️ Something went wrong — please try again.';
+    appendMsg(wrap, 'assistant', errTxt, Date.now(), true);
+  }
+
+  document.getElementById('send').disabled = false;
+  scrollBot();
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER MESSAGE
+══════════════════════════════════════════════════ */
+function mkWrap() {
+  const w = document.createElement('div');
+  w.className = 'msgs-wrap'; return w;
+}
+
+function appendMsg(wrap, role, content, ts, animate) {
+  const grp = document.createElement('div');
+  grp.className = 'msg-grp';
+  const time = new Date(ts).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  const isDM = role === 'assistant';
+
+  const av = isDM
+    ? `<div class="msg-av dm">DM</div>`
+    : `<div class="msg-av you">YOU</div>`;
+
+  const bubbleHtml = isDM ? formatDM(content) : `<p>${esc(content)}</p>`;
+  const bubbleCls  = isDM ? 'dm-b' : 'you-b';
+  const nameCls    = isDM ? 'dm' : '';
+  const nameLabel  = isDM ? 'Dan Martell' : 'You';
+
+  grp.innerHTML = `
+    <div class="msg-hd">
+      ${av}
+      <span class="msg-name ${nameCls}">${nameLabel}</span>
+      <span class="msg-ts">${time}</span>
+    </div>
+    <div class="bubble ${bubbleCls}">${bubbleHtml}</div>`;
+  wrap.appendChild(grp);
+}
+
+/* ══════════════════════════════════════════════════
+   FORMAT DAN'S RESPONSE
+══════════════════════════════════════════════════ */
+function formatDM(raw) {
+  let out = '';
+  const lines = raw.split('\n');
+  for (let i=0; i<lines.length; i++) {
+    const l = lines[i].trim();
+    // Section header **CAPS**
+    const sh = l.match(/^\*\*([A-Z][A-Z\s]+)\*\*$/);
+    if (sh) { out+=`<div class="sec-hd">${esc(sh[1])}</div>`; continue; }
+    // ## / ###
+    if (/^#{2,}\s/.test(l)) { out+=`<div class="sec-hd">${esc(l.replace(/^#+\s*/,''))}</div>`; continue; }
+    // numbered
+    const nm = l.match(/^(\d+)\.\s+(.+)/);
+    if (nm) { out+=`<div class="ni"><span class="n">${nm[1]}.</span><span class="t">${inl(nm[2])}</span></div>`; continue; }
+    // bullets
+    if (/^[-•]\s/.test(l)) { out+=`<div class="bi">${inl(l.replace(/^[-•]\s+/,''))}</div>`; continue; }
+    // blank
+    if (l==='') { out+='<br>'; continue; }
+    // paragraph
+    out+=`<p>${inl(l)}</p>`;
+  }
+  return out.replace(/(<br>\s*){3,}/g,'<br><br>');
+}
+
+function inl(t) {
+  t = esc(t);
+  t = t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  t = t.replace(/\*(.+?)\*/g,'<em>$1</em>');
+  return t;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function scrollBot() {
+  const a=document.getElementById('chat-area');
+  setTimeout(()=>{a.scrollTop=a.scrollHeight;},40);
+}
+
+</script>
+</body>
+</html>
